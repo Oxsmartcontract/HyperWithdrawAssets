@@ -1,22 +1,21 @@
-# HyperWithdrawAssets
-توسط این اسکریپت پایتون دارایی های روی هایپرلیکوید ابندا به USDC تبدیل شده و به ولتی که مشخص کردید منتقل میگردد
+Hyperliquid UENA Sell & Withdraw
 
-حتماً. ساختار را دقیقاً به همین ترتیب می‌چینیم: نیازمندی‌ها → نصب ابزارها برای هر سیستم‌عامل → ساخت متغیرهای محیطی محلی → اجرای کد نهایی.
+راهنمای اجرای کد برای فروش UENA در Hyperliquid و انتقال موجودی USDC به یک آدرس در شبکه Arbitrum.
 
-راهنمای اجرای کد Hyperliquid
+⸻
 
 1. نیازمندی‌ها
 
 برای اجرای کد به موارد زیر نیاز دارید:
 
-* Python نسخه 3.10 یا بالاتر
-* دسترسی به Terminal / PowerShell / Command Prompt
-* اینترنت
+* Python 3.10 یا بالاتر
+* دسترسی به Terminal در macOS/Linux یا PowerShell / CMD در Windows
+* اتصال اینترنت
 * فایل کد نهایی پروژه
-* کلید خصوصی کیف پولی که موجودی UENA در آن قرار دارد
-* آدرس کیف پول مقصد در شبکه Arbitrum برای دریافت USDC
+* Private Key کیف پولی که UENA در آن قرار دارد
+* آدرس کیف پول مقصد در شبکه Arbitrum
 
-کلید خصوصی فقط روی سیستم خودتان استفاده می‌شود و نباید در کد، GitHub، Telegram، Discord یا هیچ سرویس دیگری قرار گیرد.
+⚠️ امنیت: کلید خصوصی فقط روی سیستم خودتان استفاده می‌شود. آن را داخل کد، GitHub، Telegram، Discord یا هیچ سرویس دیگری قرار ندهید.
 
 ⸻
 
@@ -28,7 +27,7 @@ macOS
 
 python3 --version
 
-اگر Python نصب نبود، در صورتی که Homebrew دارید:
+اگر Python نصب نبود و Homebrew روی سیستم شما نصب است:
 
 brew install python
 
@@ -36,7 +35,7 @@ brew install python
 
 python3 --version
 
-باید نسخه‌ای مانند زیر نمایش داده شود:
+باید نسخه‌ای مشابه زیر نمایش داده شود:
 
 Python 3.12.x
 
@@ -49,7 +48,7 @@ Linux
 sudo apt update
 sudo apt install python3 python3-pip python3-venv
 
-سپس:
+سپس نسخه Python را بررسی کنید:
 
 python3 --version
 
@@ -75,16 +74,24 @@ pip --version
 
 3. نصب کتابخانه‌های موردنیاز
 
-وارد پوشه‌ای شوید که فایل کد نهایی در آن قرار دارد.
+ابتدا وارد پوشه‌ای شوید که فایل کد نهایی در آن قرار دارد.
 
-در macOS و Linux:
+macOS / Linux
+
+یک محیط مجازی Python ایجاد کنید:
 
 python3 -m venv .venv
+
+سپس آن را فعال کنید:
+
 source .venv/bin/activate
 
-در Windows PowerShell:
+Windows PowerShell
 
 python -m venv .venv
+
+سپس:
+
 .venv\Scripts\Activate.ps1
 
 اگر PowerShell اجازه اجرای اسکریپت را نداد:
@@ -95,55 +102,59 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 .venv\Scripts\Activate.ps1
 
-اکنون کتابخانه‌های موردنیاز را نصب کنید:
+⸻
 
-pip install hyperliquid-python-sdk eth-account
+نصب کتابخانه‌ها
 
-اگر پروژه دارای فایل requirements.txt است، به‌جای دستور بالا از این استفاده کنید:
+اگر پروژه دارای فایل requirements.txt است:
 
 pip install -r requirements.txt
 
+در غیر این صورت:
+
+pip install hyperliquid-python-sdk eth-account
+
 ⸻
 
-4. ساخت متغیرهای محلی
+4. ساخت متغیرهای محیطی محلی
 
-کد برای امنیت، اطلاعات حساس را مستقیماً داخل فایل Python قرار نمی‌دهد.
+برای امنیت، اطلاعات حساس مستقیماً داخل فایل Python قرار نمی‌گیرند.
 
-دو متغیر محلی باید ساخته شوند:
+دو متغیر محیطی موردنیاز هستند:
 
 HL_SECRET_KEY
 HL_DEST
 
-HL_SECRET_KEY:
+HL_SECRET_KEY
 
-کلید خصوصی کیف پولی که UENA در آن قرار دارد.
+Private Key کیف پولی که UENA در آن قرار دارد.
 
-HL_DEST:
+HL_DEST
 
-آدرس کیف پولی که می‌خواهید USDC به آن در شبکه Arbitrum ارسال شود.
+آدرس کیف پول مقصد که USDC باید به آن در شبکه Arbitrum ارسال شود.
+
+⚠️ هیچ‌وقت Private Key را در GitHub یا فایل عمومی پروژه قرار ندهید.
 
 ⸻
 
 macOS
 
-Terminal را باز کنید و اجرا کنید:
+در Terminal اجرا کنید:
 
 export HL_SECRET_KEY="0xYOUR_PRIVATE_KEY"
 export HL_DEST="0xYOUR_ARBITRUM_ADDRESS"
 
-برای بررسی:
+برای بررسی اینکه آدرس مقصد تنظیم شده است:
 
 echo $HL_DEST
 
-اگر آدرس کیف پول نمایش داده شد، متغیر ساخته شده است.
-
-برای اطمینان، کلید خصوصی را با echo نمایش ندهید.
+برای امنیت، Private Key را با echo نمایش ندهید.
 
 ⸻
 
 Linux
 
-در Terminal:
+در Terminal اجرا کنید:
 
 export HL_SECRET_KEY="0xYOUR_PRIVATE_KEY"
 export HL_DEST="0xYOUR_ARBITRUM_ADDRESS"
@@ -156,7 +167,7 @@ echo $HL_DEST
 
 Windows PowerShell
 
-در PowerShell:
+در PowerShell اجرا کنید:
 
 $env:HL_SECRET_KEY="0xYOUR_PRIVATE_KEY"
 $env:HL_DEST="0xYOUR_ARBITRUM_ADDRESS"
@@ -182,15 +193,13 @@ echo %HL_DEST%
 
 5. اجرای کد نهایی
 
-فرض کنید نام فایل نهایی:
+فرض کنید نام فایل Python پروژه:
 
 withdraw_uena.py
 
 باشد.
 
 macOS
-
-پس از فعال کردن محیط مجازی:
 
 python3 withdraw_uena.py
 
@@ -216,24 +225,22 @@ python withdraw_uena.py
 
 6. بررسی نتیجه
 
-در صورت موفقیت فروش UENA، در خروجی باید وضعیت سفارش به شکل filled نمایش داده شود.
-
-نمونه:
+در صورت موفقیت فروش UENA، باید در خروجی وضعیت سفارش مشابه زیر مشاهده شود:
 
 UENA order FILLED
 
-پس از آن موجودی USDC بررسی می‌شود و در صورت وجود موجودی کافی، برداشت به آدرس HL_DEST انجام می‌شود.
+سپس کد موجودی USDC را بررسی کرده و در صورت وجود موجودی کافی، برداشت را به آدرس HL_DEST انجام می‌دهد.
 
-در صورت موفقیت برداشت، باید چیزی مشابه این مشاهده شود:
+در صورت موفقیت برداشت، خروجی مشابه زیر نمایش داده می‌شود:
 
 Withdrawal response:
 {'status': 'ok', ...}
 
 ⸻
 
-7. پایان کار
+7. حذف متغیرهای محیطی
 
-پس از اتمام اجرا، برای حذف متغیرهای محلی از همان Terminal استفاده کنید.
+پس از پایان کار، برای حذف متغیرهای محیطی از همان Terminal یا PowerShell استفاده کنید.
 
 macOS / Linux
 
@@ -250,6 +257,48 @@ Windows CMD
 set HL_SECRET_KEY=
 set HL_DEST=
 
-اگر Terminal بسته شود، متغیرهایی که با روش بالا ساخته شده‌اند نیز از محیط همان Session حذف می‌شوند.
+⸻
 
-این نسخه دقیقاً برای قرار دادن در GitHub مناسب است و مراحل را بدون ورود به جزئیات اضافی از نصب تا اجرای کد دنبال می‌کند.
+8. امنیت
+
+هرگز موارد زیر را انجام ندهید:
+
+* ❌ قرار دادن Private Key داخل فایل Python
+* ❌ قرار دادن Private Key داخل GitHub
+* ❌ قرار دادن Private Key داخل README.md
+* ❌ ارسال Private Key در Telegram یا Discord
+* ❌ ارسال Private Key برای افراد دیگر
+* ❌ قرار دادن Private Key در فایل .env که قرار است Commit شود
+
+اگر از Git استفاده می‌کنید، بهتر است موارد زیر را داخل .gitignore قرار دهید:
+
+.env
+.venv/
+__pycache__/
+*.pyc
+
+⸻
+
+خلاصه اجرای سریع
+
+macOS / Linux
+
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+export HL_SECRET_KEY="0xYOUR_PRIVATE_KEY"
+export HL_DEST="0xYOUR_ARBITRUM_ADDRESS"
+python3 withdraw_uena.py
+unset HL_SECRET_KEY
+unset HL_DEST
+
+Windows PowerShell
+
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+$env:HL_SECRET_KEY="0xYOUR_PRIVATE_KEY"
+$env:HL_DEST="0xYOUR_ARBITRUM_ADDRESS"
+python withdraw_uena.py
+Remove-Item Env:HL_SECRET_KEY
+Remove-Item Env:HL_DEST
